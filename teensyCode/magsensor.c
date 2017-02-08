@@ -2,6 +2,8 @@
 //PROJECT CONTRIVE
 //This code is adapted from the magsensor example code provided by adafruit.
 
+//select "USB Keyboard" from the Tools-> USB Type menu to use keyboard/mouse functionality of the teensy 3.2
+
 //using this i2c library to access SDA1 and SCL1 from the back of the teensy
 #include <i2c_t3-master>
 
@@ -46,24 +48,63 @@ void setup(void){
   displaySensorDetails();
 }
 
-void loop(void)
-{
+void loop(void){
   /* Get a new sensor event */
   sensors_event_t event;
   mag.getEvent(&event);
 
-  /* Display the results (magnetic vector values are in micro-Tesla (uT)) */
-  Serial.print("X: "); Serial.print(event.magnetic.x); Serial.print("  ");
-  Serial.print("Y: "); Serial.print(event.magnetic.y); Serial.print("  ");
-  Serial.print("Z: "); Serial.print(event.magnetic.z); Serial.print("  ");Serial.println("uT");
+  //check capacitive button for mode switching
 
-  /* Note: You can also get the raw (non unified values) for */
-  /* the last data sample as follows. The .getEvent call populates */
-  /* the raw values used below. */
-  // Serial.print("X Raw: "); Serial.print(mag.raw.x); Serial.print("  ");
-  // Serial.print("Y Raw: "); Serial.print(mag.raw.y); Serial.print("  ");
-  // Serial.print("Z Raw: "); Serial.print(mag.raw.z); Serial.println("");
+  //check up
+  if(event.magnetic.y > ) upDown =  1;
+  if(event.magnetic.y < ) upDown = -1;
 
-  /* Delay before the next sample */
-  delay(500);
+  //check left + right
+  if(event.magnetic.x > ) leftRight =  1;
+  if(event.magnetic.x < ) leftRight = -1;
+
+
+  //check if up/down or left/right released
+  if((event.magnetic.y > ) && (event.magnetic.y < )) upDown = 0;
+  if((event.magnetic.x > ) && (event.magnetic.x < )) leftRight = 0;
+
+  //push input updates
+  pushInput(inputMode, upDown, leftRight);
 }
+
+
+void pushInput(int inputMode, int upDown, int leftRight){
+  switch(inputMode){
+    //arrow keys
+    case 0:
+      //up/down
+      if(upDown ==  1) Keyboard.set_key1(KEY_UP);
+      if(upDown == -1) Keyboard.set_key1(KEY_DOWN);
+      //left/right
+      if(leftRight ==  1) Keyboard.set_key2(KEY_RIGHT);
+      if(leftRight == -1) Keyboard.set_key2(KEY_LEFT);
+      //off?
+      if(upDown    == 0) Keyboard.set_key1(0);
+      if(leftRight == 0) Keyboard.set_key2(0);
+      break;
+      
+    //WASD
+    case 1:
+      //up/down
+      if(upDown ==  1) Keyboard.set_key1(KEY_W);
+      if(upDown == -1) Keyboard.set_key1(KEY_S);
+      //left/right
+      if(leftRight ==  1) Keyboard.set_key2(KEY_D);
+      if(leftRight == -1) Keyboard.set_key2(KEY_A);
+      //off?
+      if(upDown    == 0) Keyboard.set_key1(0);
+      if(leftRight == 0) Keyboard.set_key2(0);
+      break;
+
+    //Mouse
+    case 2:
+      Mouse.move(leftRight, upDown);
+  }
+}
+
+
