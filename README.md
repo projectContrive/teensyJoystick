@@ -1,5 +1,7 @@
 # teensyJoystick
 
+** main operation code in teensyCode->magsensor.c **
+
 A wireless magnetic joystick interpreted by a teensy 3.2
 
 All code is contained on the Teensy 3.2. The teensy acts as a USB keyboard/mouse and sends commands according to the position of the joystick. Using the capacitive button on the backpack PCB, the key mapping of the teensy can be changed to the following
